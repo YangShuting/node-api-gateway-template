@@ -1,0 +1,35 @@
+<html>
+<head>
+    <!-- Do _not_  rely on this URL in production. Use only during development.  -->
+    <script src="//netflix.github.io/falcor/build/falcor.browser.js"></script>
+    <script>
+
+        var publicModel = new falcor.Model({source: new falcor.HttpDataSource('/public-model.json')});
+
+        // retrieve the "greeting" key from the root of the Virtual JSON resource
+        publicModel.
+        get("greeting").
+        then(function (response) {
+//            localStorage.setItem('id_token', response.json.greeting); // get the token and set to localStorage
+            document.write(response.json.greeting);
+        });
+
+        var privateModel = new falcor.Model({
+            source: new falcor.HttpDataSource('/private-model.json', {
+                // Send the token as an Authorization header
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('id_token')
+                }
+            })
+        });
+
+        privateModel.
+        get("login").
+        then(function (response) {
+            document.write(response.json.login);
+        });
+    </script>
+</head>
+<body>
+</body>
+</html>

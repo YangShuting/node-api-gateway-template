@@ -13,6 +13,7 @@
     "babel-polyfill": "6.*",
     "dateformat": "*",
     "express": "^4.13.4",
+    "express-jwt": "^3.3.0",
     "falcor-express": "^0.1.2",
     "falcor-router": "^0.2.12",
     "jsonfile": "^2.2.3",

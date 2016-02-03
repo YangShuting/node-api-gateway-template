@@ -8,21 +8,46 @@ log.level = 'debug';
 
 const args = minimist(process.argv.slice(2));
 
-var falcorExpress = require('falcor-express');
-var Router = require('falcor-router');
-
 var express = require('express');
 var app = express();
+var falcorExpress = require('falcor-express');
+var Router = require('falcor-router');
+import jwt from 'express-jwt'
 
-app.use('/model.json', falcorExpress.dataSourceRoute(function (req, res) {
+//var authenticate = jwt({
+//    secret: new Buffer('YOUR_CLIENT_SECRET', 'base64')
+//});
+
+// https://matoski.com/article/jwt-express-node-mongoose/#jwt
+// http://netflix.github.io/falcor/documentation/router.html
+// https://github.com/auth0/express-jwt
+
+var authenticate = jwt({secret: 'shhhhhhared-secret'});
+
+app.use('/public-model.json', falcorExpress.dataSourceRoute(function (req, res) {
     // create a Virtual JSON resource with single key ("greeting")
     return new Router([
         {
             // match a request for the key "greeting"
             route: "greeting",
             // respond with a PathValue with the value of "Hello World."
-            get: function() {
-                return {path:["greeting"], value: "Hello World"};
+            get: function () {
+                return {path: ["greeting"], value: "Hello"};
+            }
+        }
+    ]);
+}));
+
+app.use('/private-model.json', authenticate, falcorExpress.dataSourceRoute(function (req, res) {
+    // create a Virtual JSON resource with single key ("greeting")
+    return new Router([
+        {
+            // match a request for the key "greeting"
+            route: "login",
+            // respond with a PathValue with the value of "Hello World."
+            get: function () {
+                console.log(res.user);
+                return {path: ["login"], value: "Hello World"};
             }
         }
     ]);
