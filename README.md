@@ -1,0 +1,1 @@
+I use Ramda as utility lib and to produce transducers functions. See http://simplectic.com/blog/2015/ramda-transducers-logs/

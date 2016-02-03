@@ -1,0 +1,33 @@
+{
+  "name": "node-api-gateway-template",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "jest",
+    "build": "./node_modules/.bin/babel src -d lib --presets=es2015 --ignore=*__tests__*",
+    "dev-start": "babel-node src/app.js",
+    "start": "node lib/app.js"
+  },
+  "author": "@simonedesordi",
+  "dependencies": {
+    "babel-core": "6.*",
+    "babel-polyfill": "6.*",
+    "dateformat": "*",
+    "jsonfile": "^2.2.3",
+    "ramda": "^0.19.1",
+    "minimist": "*",
+    "request-json": "*",
+    "rx-node": "*",
+    "winston": "*"
+  },
+  "devDependencies": {
+    "babel": "6.*",
+    "babel-cli": "*",
+    "babel-preset-stage-3": "*",
+    "babel-preset-es2015": "*",
+    "babel-jest": "*",
+    "jest-cli": "*"
+  },
+  "jest": {
+    "scriptPreprocessor": "<rootDir>/node_modules/babel-jest"
+  }
+}
