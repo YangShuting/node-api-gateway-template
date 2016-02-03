@@ -12,9 +12,12 @@
     "babel-core": "6.*",
     "babel-polyfill": "6.*",
     "dateformat": "*",
+    "express": "^4.13.4",
+    "falcor-express": "^0.1.2",
+    "falcor-router": "^0.2.12",
     "jsonfile": "^2.2.3",
-    "ramda": "^0.19.1",
     "minimist": "*",
+    "ramda": "^0.19.1",
     "request-json": "*",
     "rx-node": "*",
     "winston": "*"
