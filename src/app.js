@@ -22,6 +22,16 @@ import jwt from 'express-jwt'
 // http://netflix.github.io/falcor/documentation/router.html
 // https://github.com/auth0/express-jwt
 
+var port = function () {
+    var portGlobal = process.env.PORT;
+    console.log("portGlobal = " + portGlobal);
+
+    var port = portGlobal /*|| portParameter*/ || '9090';
+    console.log("port = " + port);
+
+    return port;
+};
+
 var authenticate = jwt({secret: 'shhhhhhared-secret'});
 
 app.use('/public-model.json', falcorExpress.dataSourceRoute(function (req, res) {
@@ -56,4 +66,4 @@ app.use('/private-model.json', authenticate, falcorExpress.dataSourceRoute(funct
 // serve static files from current directory
 app.use(express.static(__dirname + '/'));
 
-var server = app.listen(3000);
+var server = app.listen(port());
