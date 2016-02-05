@@ -8,6 +8,6 @@ deploy:
   provider: heroku
   api_key:
     secure: f/6UcHaxVyRw4dDPNiGWC7haf89KEqXMx9xulOSM1tUhi0uytKw68b6J73SA2ZuWZCZUtLGjDpp3nxZXUNuB/oTBCsUcD5d2A7R1IGqkiwklof1+HoKF1Nlelm+mo4WxRU8Lkoq8YcEJ3tfYe/ScI3mfwaW5hOiVCsJF1nQ/qHaTg+5JkGXXHhOduA6hZ+t/jNt+gwyP+ATAc0KrfoymjtYc4BVo4OG20ejXxrXrvrBFpIIqiz7hw9JNlaqIdrj0Rv5RsPUmBd580mbkHAta+/d7ElHQE46mGL4KPIm5WDdN/QS8/DBm+cxcMhHbN2GM2RgbCEffvnqxBNNIs++qTobOBSI8FDe6MYxG98pmy61EumNxynUiB0z5CZA8zGvBMtWled/h97Xo0eaN0YYq9q9cLfn+MGyBb5OkHN87gLVN3hLev8P/J3E70hjnUS6o8fw3B7CRtWTqjNBkkyGYEsLathKU+WaM2rLOl3puStPFlMcXzb4r6Y3O9uEWR0KJaiXo1JXpJkfxqeO1zv0Xoj7rlfBZEvMbq8sNhZMF4bwftgDxvl4zxHhirVluAJLVor02GKQGUKv9z1qz2LUZVaj0eMvy86c4u4FLuVe7YPVKtSG30Kn/vEWsMPevzrWQ/jC/StnKlhOYAU2cOq8FtXLI+9WW+3Hy1/PgPXDjV2k=
-  app: serene-beyond-34164
+  app: node-api-gateway-template
   on:
     repo: simonedesordi/node-api-gateway-template
