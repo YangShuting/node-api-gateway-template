@@ -33,9 +33,7 @@
     "morgan": "*",
     "on-finished": "*",
     "response-time": "*",
-    "mongoose": "*",
-    "redis": "^*",
-    "hiredis": "*"
+    "mongoose": "*"
   },
   "devDependencies": {
     "babel": "6.*",
