@@ -1,0 +1,13 @@
+sudo: false
+language: node_js
+node_js:
+- '5'
+notifications:
+  email: simone.desordi@gmail.com
+deploy:
+  provider: heroku
+  api_key:
+    secure: WyJiMyYRw2KkDp5OE8it/Sl3ZX3ws4EESHBuYC45qPM4lU3pmb6LafApO+IYR9qd2nwYOF1K8ive94fNyAydkJoq/4PUC1ZMfrMwvhy2/nqSU313q69jU2y3b1kaLNojXqJvxmY1rdo8tH6I3GipiA77LjBQ+a4F+Iv4LmM9sfIpU6CluMDLahkgv08uZGt7tSPMTBlQo0pSF1Nyqc2PltYIXqReNVfxnBsYaO6iarajDWXOEcbnQl5HICcfxdT/OtHDFujJENqIt2m9iOoWembEC64mNO7H2xeUt+dCxP2yYtlEub+fdeRRU0ZUhdJB0W3RuKXB7XO1rhfeOujCO5lIe9hHhH0APepYQ1kDmwfhD2veAfFfxxEgvYDMOWhYarHbCbRhgFbPv34HfCxIjVecF8Uufe/nqR2KudDIDjqK0MIS2qp5yqaewuMJHb7cMLHcOf20i5h6ptgqeq5UDlD2N0wfPe0c9MrzvrJFPoZB/3PqZ1llhXc88xbl+K+rUY+QG3Nw8TgzCFADItpY20oqEhg7S1/6QHbujvIbfarL8Iwp2o9qEw2XxU1rd9E2AucXfCu5WNR7j1GeBl4QL3II++L3U3bcdE1o9UtHSvxuM4OgHK5BtuaALgN7yzkib5sSX7u4gJA0DpoZVbMGs+Ur9/gyBBnZJuPXwejAnaA=
+  app: node-api-gateway-template
+  on:
+    repo: simonedesordi/node-api-gateway-template
