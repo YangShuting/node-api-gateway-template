@@ -4,7 +4,7 @@
     <script src="//netflix.github.io/falcor/build/falcor.browser.js"></script>
     <script>
 
-        var publicModel = new falcor.Model({source: new falcor.HttpDataSource('/public-model.json')});
+        var publicModel = new falcor.Model({source: new falcor.HttpDataSource('/api/public-model.json')});
 
         // retrieve the "greeting" key from the root of the Virtual JSON resource
         publicModel.
@@ -15,7 +15,7 @@
         });
 
         var privateModel = new falcor.Model({
-            source: new falcor.HttpDataSource('/private-model.json', {
+            source: new falcor.HttpDataSource('/api/private-model.json', {
                 // Send the token as an Authorization header
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('id_token')

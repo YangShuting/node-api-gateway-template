@@ -14,9 +14,74 @@ var falcorExpress = require('falcor-express');
 var Router = require('falcor-router');
 import jwt from 'express-jwt'
 
-//var authenticate = jwt({
-//    secret: new Buffer('YOUR_CLIENT_SECRET', 'base64')
-//});
+var debug = require('debug')('app:' + process.pid),
+    path = require("path"),
+    fs = require("fs"),
+    http_port = process.env.HTTP_PORT || 3000,
+    https_port = process.env.HTTPS_PORT || 3443,
+    config = require("./config.json"),
+    onFinished = require('on-finished'),
+    NotFoundError = require(path.join(__dirname, "errors", "NotFoundError.js")),
+    utils = require(path.join(__dirname, "utils.js")),
+    unless = require('express-unless');
+
+debug("Attaching plugins");
+app.use(require('morgan')("dev")); // log server
+var bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(require('compression')());
+app.use(require('response-time')());
+
+app.use(function (req, res, next) {
+
+    onFinished(res, function (err) {
+        debug("[%s] finished request", req.connection.remoteAddress);
+    });
+
+    next();
+
+});
+
+var jwtCheck = jwt({
+    secret: config.secret
+});
+jwtCheck.unless = unless;
+
+app.use(jwtCheck.unless({path: '/api/login' }));
+app.use(utils.middleware().unless({path: '/api/login' }));
+app.use("/api", require(path.join(__dirname, "routes", "default.js"))());
+
+// all other requests redirect to 404
+app.all("*", function (req, res, next) {
+    next(new NotFoundError("404"));
+});
+
+// error handler for all the applications
+app.use(function (err, req, res, next) {
+
+    var errorType = typeof err,
+        code = 500,
+        msg = { message: "Internal Server Error" };
+
+    switch (err.name) {
+        case "UnauthorizedError":
+            code = err.status;
+            msg = undefined;
+            break;
+        case "BadRequestError":
+        case "UnauthorizedAccessError":
+        case "NotFoundError":
+            code = err.status;
+            msg = err.inner;
+            break;
+        default:
+            break;
+    }
+
+    return res.status(code).json(msg);
+
+});
 
 // https://matoski.com/article/jwt-express-node-mongoose/#jwt
 // http://netflix.github.io/falcor/documentation/router.html
@@ -32,9 +97,7 @@ var port = function () {
     return port;
 };
 
-var authenticate = jwt({secret: 'shhhhhhared-secret'});
-
-app.use('/public-model.json', falcorExpress.dataSourceRoute(function (req, res) {
+const publicDataSourceRouter = function (req, res) {
     // create a Virtual JSON resource with single key ("greeting")
     return new Router([
         {
@@ -46,9 +109,9 @@ app.use('/public-model.json', falcorExpress.dataSourceRoute(function (req, res) 
             }
         }
     ]);
-}));
+};
 
-app.use('/private-model.json', authenticate, falcorExpress.dataSourceRoute(function (req, res) {
+const privateDataSourceRouter = function (req, res) {
     // create a Virtual JSON resource with single key ("greeting")
     return new Router([
         {
@@ -61,8 +124,12 @@ app.use('/private-model.json', authenticate, falcorExpress.dataSourceRoute(funct
             }
         }
     ]);
-}));
+};
 
+var authenticate = jwt({secret: 'shhhhhhared-secret'});
+
+app.use('/api/public-model.json', falcorExpress.dataSourceRoute(publicDataSourceRouter));
+app.use('/api/private-model.json', authenticate, falcorExpress.dataSourceRoute(privateDataSourceRouter));
 // serve static files from current directory
 app.use(express.static(__dirname + '/'));
 
