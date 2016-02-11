@@ -17,8 +17,6 @@ import jwt from 'express-jwt'
 var debug = require('debug')('app:' + process.pid),
     path = require("path"),
     fs = require("fs"),
-    http_port = process.env.HTTP_PORT || 3000,
-    https_port = process.env.HTTPS_PORT || 3443,
     config = require("./config.json"),
     onFinished = require('on-finished'),
     NotFoundError = require(path.join(__dirname, "errors", "NotFoundError.js")),
@@ -48,40 +46,41 @@ var jwtCheck = jwt({
 });
 jwtCheck.unless = unless;
 
-app.use(jwtCheck.unless({path: '/api/login' }));
-app.use(utils.middleware().unless({path: '/api/login' }));
+//TODO
+//app.use(jwtCheck.unless({path: '/api/login' }));
+//app.use(utils.middleware().unless({path: '/api/login' }));
 app.use("/api", require(path.join(__dirname, "routes", "default.js"))());
 
 // all other requests redirect to 404
-app.all("*", function (req, res, next) {
-    next(new NotFoundError("404"));
-});
+//app.all("*", function (req, res, next) {
+//    next(new NotFoundError("404"));
+//});
 
 // error handler for all the applications
-app.use(function (err, req, res, next) {
-
-    var errorType = typeof err,
-        code = 500,
-        msg = { message: "Internal Server Error" };
-
-    switch (err.name) {
-        case "UnauthorizedError":
-            code = err.status;
-            msg = undefined;
-            break;
-        case "BadRequestError":
-        case "UnauthorizedAccessError":
-        case "NotFoundError":
-            code = err.status;
-            msg = err.inner;
-            break;
-        default:
-            break;
-    }
-
-    return res.status(code).json(msg);
-
-});
+//app.use(function (err, req, res, next) {
+//
+//    var errorType = typeof err,
+//        code = 500,
+//        msg = { message: "Internal Server Error" };
+//
+//    switch (err.name) {
+//        case "UnauthorizedError":
+//            code = err.status;
+//            msg = undefined;
+//            break;
+//        case "BadRequestError":
+//        case "UnauthorizedAccessError":
+//        case "NotFoundError":
+//            code = err.status;
+//            msg = err.inner;
+//            break;
+//        default:
+//            break;
+//    }
+//
+//    return res.status(code).json(msg);
+//
+//});
 
 // https://matoski.com/article/jwt-express-node-mongoose/#jwt
 // http://netflix.github.io/falcor/documentation/router.html
@@ -119,17 +118,14 @@ const privateDataSourceRouter = function (req, res) {
             route: "login",
             // respond with a PathValue with the value of "Hello World."
             get: function () {
-                console.log(res.user);
                 return {path: ["login"], value: "Hello World"};
             }
         }
     ]);
 };
 
-var authenticate = jwt({secret: 'shhhhhhared-secret'});
-
 app.use('/api/public-model.json', falcorExpress.dataSourceRoute(publicDataSourceRouter));
-app.use('/api/private-model.json', authenticate, falcorExpress.dataSourceRoute(privateDataSourceRouter));
+app.use('/api/private-model.json', jwtCheck, falcorExpress.dataSourceRoute(privateDataSourceRouter));
 // serve static files from current directory
 app.use(express.static(__dirname + '/'));
 

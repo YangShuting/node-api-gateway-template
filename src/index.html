@@ -2,18 +2,11 @@
 <head>
     <!-- Do _not_  rely on this URL in production. Use only during development.  -->
     <script src="//netflix.github.io/falcor/build/falcor.browser.js"></script>
+    <!-- Or all of RxJS minus testing -->
+    <script src="static/rx.all.js"></script>
+    <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
     <script>
-
         var publicModel = new falcor.Model({source: new falcor.HttpDataSource('/api/public-model.json')});
-
-        // retrieve the "greeting" key from the root of the Virtual JSON resource
-        publicModel.
-        get("greeting").
-        then(function (response) {
-//            localStorage.setItem('id_token', response.json.greeting); // get the token and set to localStorage
-            document.write(response.json.greeting);
-        });
-
         var privateModel = new falcor.Model({
             source: new falcor.HttpDataSource('/api/private-model.json', {
                 // Send the token as an Authorization header
@@ -23,11 +16,41 @@
             })
         });
 
-//        privateModel.
-//        get("login").
-//        then(function (response) {
-//            document.write(response.json.login);
-//        });
+        var publicObservable = publicModel.get("greeting");
+        var privateObservable = privateModel.get("login");
+        var loginObservable = Rx.Observable.fromPromise(
+                $.post("api/login", {username: "John", password: "Long"})
+        );
+
+        // 1: do a call to a public URI
+        publicObservable.
+        // 2: call login
+        concatMap(function (x) {
+            alert("da public : " + JSON.stringify(x.json.greeting, null, 2));
+            return loginObservable;
+        }).
+        concatMap(function (x) {
+            alert("da login : " + JSON.stringify(x, null, 2));
+            // 3: save token
+            localStorage.setItem('id_token', x.token); // get the token and set to localStorage
+            // 4: do a call to a private URI
+            return privateObservable;
+        }).
+        concatMap(function (x) {
+            return publicObservable;
+        }).
+        forEach(
+                function (x) {
+                    alert('Next done: ' + JSON.stringify(x, null, 2));
+                },
+                function (err) {
+                    alert('Error: ' + JSON.stringify(err, null, 2));
+                },
+                function () {
+                    alert('Completed');
+                });
+
+
     </script>
 </head>
 <body>

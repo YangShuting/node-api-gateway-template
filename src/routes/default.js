@@ -13,7 +13,7 @@ var debug = require('debug')('app:routes:default' + process.pid),
 
 var authenticate = function (req, res, next) {
 
-    debug("Processing authenticate middleware");
+    console.log("Processing authenticate middleware");
 
     var username = req.body.username,
         password = req.body.password;
@@ -79,6 +79,7 @@ module.exports = function () {
     });
 
     router.route("/login").post(authenticate, function (req, res, next) {
+        console.log("Login end. Now return");
         return res.status(200).json(req.user);
     });
 

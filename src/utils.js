@@ -66,7 +66,7 @@ module.exports.create = function (user, req, res, next) {
         name: user.name,
         email: user.email,
         token: jsonwebtoken.sign({_id: user._id}, config.secret, {
-            expiresInMinutes: TOKEN_EXPIRATION
+            expiresIn: TOKEN_EXPIRATION_SEC
         })
     };
 
@@ -75,7 +75,7 @@ module.exports.create = function (user, req, res, next) {
     data.token_exp = decoded.exp;
     data.token_iat = decoded.iat;
 
-    debug("Token generated for user: %s, token: %s", data.username, data.token);
+    console.log("Token generated for user: %s, token: %s", data.username, data.token);
 
     //client.set(data.token, JSON.stringify(data), function (err, reply) {
     //    if (err) {
