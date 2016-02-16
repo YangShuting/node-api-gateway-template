@@ -46,9 +46,37 @@ var jwtCheck = jwt({
 });
 jwtCheck.unless = unless;
 
+const publicPath = {
+    path: [
+        '/',
+        '/index.html', // just for this demo
+        '^/static/',
+        '^/api/public/'
+    ]
+};
+
+/*
+ /api/public/...
+ /api/private/...
+ /api/login/
+ /api/logout
+ /api/verify
+
+ =>
+
+ /api/public/...
+ /api/public/login/
+
+ /api/private/...
+ /api/private/logout
+ /api/private/verify
+
+ */
+
+
 //TODO
-//app.use(jwtCheck.unless({path: '/api/login' }));
-//app.use(utils.middleware().unless({path: '/api/login' }));
+app.use(jwtCheck.unless(publicPath));
+app.use(utils.middleware().unless(publicPath));
 app.use("/api", require(path.join(__dirname, "routes", "default.js"))());
 
 // all other requests redirect to 404
@@ -104,7 +132,7 @@ const publicDataSourceRouter = function (req, res) {
             route: "greeting",
             // respond with a PathValue with the value of "Hello World."
             get: function () {
-                return {path: ["greeting"], value: "Hello"};
+                return {path: ["greeting"], value: "Hello world"};
             }
         }
     ]);
@@ -118,14 +146,14 @@ const privateDataSourceRouter = function (req, res) {
             route: "login",
             // respond with a PathValue with the value of "Hello World."
             get: function () {
-                return {path: ["login"], value: "Hello World"};
+                return {path: ["login"], value: "Private Hello World"};
             }
         }
     ]);
 };
 
-app.use('/api/public-model.json', falcorExpress.dataSourceRoute(publicDataSourceRouter));
-app.use('/api/private-model.json', jwtCheck, falcorExpress.dataSourceRoute(privateDataSourceRouter));
+app.use('/api/public/model.json', falcorExpress.dataSourceRoute(publicDataSourceRouter));
+app.use('/api/private/model.json', jwtCheck, falcorExpress.dataSourceRoute(privateDataSourceRouter));
 // serve static files from current directory
 app.use(express.static(__dirname + '/'));
 

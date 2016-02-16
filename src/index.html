@@ -6,9 +6,9 @@
     <script src="static/rx.all.js"></script>
     <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
     <script>
-        var publicModel = new falcor.Model({source: new falcor.HttpDataSource('/api/public-model.json')});
+        var publicModel = new falcor.Model({source: new falcor.HttpDataSource('/api/public/model.json')});
         var privateModel = new falcor.Model({
-            source: new falcor.HttpDataSource('/api/private-model.json', {
+            source: new falcor.HttpDataSource('/api/private/model.json', {
                 // Send the token as an Authorization header
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('id_token')
@@ -18,28 +18,32 @@
 
         var publicObservable = publicModel.get("greeting");
         var privateObservable = privateModel.get("login");
-        var loginObservable = Rx.Observable.fromPromise(
-                $.post("api/login", {username: "John", password: "Long"})
-        );
+        var getLoginObservable = function () {
+            return Rx.Observable.fromPromise(
+                    $.post("api/login", {username: "John", password: "Long"}).promise()
+            );
+        };
 
-        // 1: do a call to a public URI
-        publicObservable.
-        // 2: call login
-        concatMap(function (x) {
+        /*
+         privateObservable.concatMap(function (x) {
+         alert("da private : " + JSON.stringify(x.json.login, null, 2));
+         // 1: do a call to a private URI: it should be KO ! (before login)
+         return publicObservable;
+         })
+         */
+        publicObservable.concatMap(function (x) {
             alert("da public : " + JSON.stringify(x.json.greeting, null, 2));
-            return loginObservable;
-        }).
-        concatMap(function (x) {
+            // 2: call login
+            return getLoginObservable();
+        }).concatMap(function (x) {
             alert("da login : " + JSON.stringify(x, null, 2));
             // 3: save token
             localStorage.setItem('id_token', x.token); // get the token and set to localStorage
             // 4: do a call to a private URI
             return privateObservable;
-        }).
-        concatMap(function (x) {
+        }).concatMap(function (x) {
             return publicObservable;
-        }).
-        forEach(
+        }).forEach(
                 function (x) {
                     alert('Next done: ' + JSON.stringify(x, null, 2));
                 },
@@ -49,7 +53,6 @@
                 function () {
                     alert('Completed');
                 });
-
 
     </script>
 </head>
