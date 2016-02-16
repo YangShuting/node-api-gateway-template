@@ -75,8 +75,8 @@ const publicPath = {
 
 
 //TODO
-app.use(jwtCheck.unless(publicPath));
-app.use(utils.middleware().unless(publicPath));
+app.use("/api/private", jwtCheck.unless(publicPath));
+app.use("/api/private", utils.middleware().unless(publicPath));
 app.use("/api", require(path.join(__dirname, "routes", "default.js"))());
 
 // all other requests redirect to 404
