@@ -2,72 +2,14 @@
 <head>
     <!-- Do _not_  rely on this URL in production. Use only during development.  -->
     <script src="//netflix.github.io/falcor/build/falcor.browser.js"></script>
-    <!-- Or all of RxJS minus testing -->
-    <script src="static/rx.all.js"></script>
     <script src="//code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="static/rx.all.js"></script>
+    <script src="static/client.js"></script>
 </head>
 <body>
 <button id="public">public call!</button>
 <button id="private">private call!</button>
 <button id="login">do login!</button>
-<script>
-    var publicModel = new falcor.Model({source: new falcor.HttpDataSource('/api/public/model.json')});
-    var privateModel = new falcor.Model({
-        source: new falcor.HttpDataSource('/api/private/model.json', {
-            // Send the token as an Authorization header
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('id_token')
-            }
-        })
-    });
-
-    var log = function (text) {
-        $('body').append('<p>' + text + '</p>');
-    };
-
-    var publicButton = $('#public');
-    var publicClick = Rx.Observable.fromEvent(publicButton, 'click');
-    var privateClick = Rx.Observable.fromEvent($('#private'), 'click');
-    var loginClick = Rx.Observable.fromEvent($('#login'), 'click');
-
-    var publicObservable = publicModel.get("greeting");
-    var privateObservable = privateModel.get("login");
-    var getLoginObservable = function () {
-        return Rx.Observable.fromPromise(
-                $.post("api/login", {username: "John", password: "Long"})
-        );
-    };
-
-    publicClick.concatMap(function (x) {
-        log("da click : " + JSON.stringify(x, null, 2));
-        return publicObservable
-    }).forEach(function (x) {
-        log("da public : " + JSON.stringify(x.json.greeting, null, 2));
-    });
-
-    //    loginClick.concatMap(function (x) {
-    //        // 2: call login
-    //        return getLoginObservable()
-    //    }.concatMap(function (x) {
-    //        log("da login : " + JSON.stringify(x, null, 2));
-    //        // 3: save token
-    //        localStorage.setItem('id_token', x.token); // get the token and set to localStorage
-    //        // 4: do a call to a private URI
-    //        return privateObservable;
-    //    }).concatMap(function (x) {
-    //        log("da private : " + JSON.stringify(x, null, 2));
-    //        return publicObservable;
-    //    }).forEach(
-    //            function (x) {
-    //                log('Next done: ' + JSON.stringify(x, null, 2));
-    //            },
-    //            function (err) {
-    //                log('Error: ' + JSON.stringify(err, null, 2));
-    //            },
-    //            function () {
-    //                log('Completed');
-    //            });
-
-</script>
+<textarea id="logArea" rows="15" cols="100"></textarea>
 </body>
 </html>

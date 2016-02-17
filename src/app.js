@@ -73,42 +73,10 @@ const publicPath = {
 
  */
 
-
 //TODO
-app.use("/api/private", jwtCheck.unless(publicPath));
-app.use("/api/private", utils.middleware().unless(publicPath));
+//app.use("/api/private", jwtCheck.unless(publicPath));
+//app.use("/api/private", utils.middleware().unless(publicPath));
 app.use("/api", require(path.join(__dirname, "routes", "default.js"))());
-
-// all other requests redirect to 404
-//app.all("*", function (req, res, next) {
-//    next(new NotFoundError("404"));
-//});
-
-// error handler for all the applications
-//app.use(function (err, req, res, next) {
-//
-//    var errorType = typeof err,
-//        code = 500,
-//        msg = { message: "Internal Server Error" };
-//
-//    switch (err.name) {
-//        case "UnauthorizedError":
-//            code = err.status;
-//            msg = undefined;
-//            break;
-//        case "BadRequestError":
-//        case "UnauthorizedAccessError":
-//        case "NotFoundError":
-//            code = err.status;
-//            msg = err.inner;
-//            break;
-//        default:
-//            break;
-//    }
-//
-//    return res.status(code).json(msg);
-//
-//});
 
 // https://matoski.com/article/jwt-express-node-mongoose/#jwt
 // http://netflix.github.io/falcor/documentation/router.html
@@ -153,8 +121,39 @@ const privateDataSourceRouter = function (req, res) {
 };
 
 app.use('/api/public/model.json', falcorExpress.dataSourceRoute(publicDataSourceRouter));
-app.use('/api/private/model.json', jwtCheck, falcorExpress.dataSourceRoute(privateDataSourceRouter));
+app.use('/api/private/model.json', falcorExpress.dataSourceRoute(privateDataSourceRouter));
 // serve static files from current directory
 app.use(express.static(__dirname + '/'));
+
+// all other requests redirect to 404
+app.all("*", function (req, res, next) {
+    next(new NotFoundError("404"));
+});
+
+// error handler for all the applications
+app.use(function (err, req, res, next) {
+
+    var errorType = typeof err,
+        code = 500,
+        msg = { message: "Internal Server Error" };
+
+    switch (err.name) {
+        case "UnauthorizedError":
+            code = err.status;
+            msg = undefined;
+            break;
+        case "BadRequestError":
+        case "UnauthorizedAccessError":
+        case "NotFoundError":
+            code = err.status;
+            msg = err.inner;
+            break;
+        default:
+            break;
+    }
+
+    return res.status(code).json(msg);
+
+});
 
 var server = app.listen(port());
