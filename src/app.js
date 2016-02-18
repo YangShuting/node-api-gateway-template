@@ -78,7 +78,6 @@ app.use(function (req, res, next) {
     });
 
     next();
-
 });
 
 var jwtCheck = jwt({
@@ -96,6 +95,7 @@ const publicPath = {
 };
 
 /*
+ TODO
  /api/public/...
  /api/private/...
  /api/login/
@@ -116,7 +116,6 @@ const publicPath = {
 app.use('/api/public/model.json', falcorExpress.dataSourceRoute(publicDataSourceRouter));
 app.use('/api/private/model.json', jwtCheck, falcorExpress.dataSourceRoute(privateDataSourceRouter));
 
-//TODO
 app.use("/api/private", jwtCheck.unless(publicPath));
 app.use("/api/private", utils.middleware().unless(publicPath));
 app.use("/api", require(path.join(__dirname, "routes", "default.js"))());

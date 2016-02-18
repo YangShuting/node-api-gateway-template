@@ -12,6 +12,10 @@ var debug = require('debug')('app:utils:' + process.pid),
     TOKEN_EXPIRATION_SEC = TOKEN_EXPIRATION * 60,
     UnauthorizedAccessError = require(path.join(__dirname, 'errors', 'UnauthorizedAccessError.js'));
 
+// logger
+import winston from 'winston';
+const logger = winston;
+
 //client.on('error', function (err) {
 //    debug(err);
 //});
@@ -225,6 +229,7 @@ module.exports.middleware = function () {
 
     var func = function (req, res, next) {
 
+        logger.debug('middleware for token');
         var token = exports.fetch(req.headers);
 
         exports.retrieve(token, function (err, data) {
