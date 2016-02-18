@@ -4,7 +4,7 @@
   "scripts": {
     "test": "jest",
     "build": "./node_modules/.bin/babel src -d lib --presets=es2015 --ignore=*__tests__*",
-    "dev-start": "babel-node src/app.js",
+    "dev-start": "babel-node src/app.js  --logLevel=debug",
     "start": "node lib/app.js"
   },
   "author": "@simonedesordi",
