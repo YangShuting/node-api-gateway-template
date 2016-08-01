@@ -1,0 +1,11 @@
+api:
+  build: ./docker
+  links:
+      - redis-cache:redis
+  ports:
+    - "9090:9090"
+
+redis-cache:
+  image: redis
+  ports:
+    - "6379"

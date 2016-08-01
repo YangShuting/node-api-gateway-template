@@ -3,8 +3,8 @@
 var debug = require('debug')('app:utils:' + process.pid),
     path = require('path'),
     util = require('util'),
-//redis = require("redis"),
-//client = redis.createClient(),
+    redis = require("redis"),
+    client = redis.createClient({'host': '192.168.99.100'}),
     _ = require("lodash"),
     config = require("./config.json"),
     jsonwebtoken = require("jsonwebtoken"),
@@ -16,13 +16,13 @@ var debug = require('debug')('app:utils:' + process.pid),
 import winston from 'winston';
 const logger = winston;
 
-//client.on('error', function (err) {
-//    debug(err);
-//});
-//
-//client.on('connect', function () {
-//    debug("Redis successfully connected");
-//});
+client.on('error', function (err) {
+    logger.info(err);
+});
+
+client.on('connect', function () {
+    logger.info("Redis successfully connected");
+});
 
 /**
  * Find the authorization headers from the headers in the request
@@ -81,31 +81,31 @@ module.exports.create = function (user, req, res, next) {
 
     console.log("Token generated for user: %s, token: %s", data.username, data.token);
 
-    //client.set(data.token, JSON.stringify(data), function (err, reply) {
-    //    if (err) {
-    //        return next(new Error(err));
-    //    }
-    //
-    //    if (reply) {
-    //        client.expire(data.token, TOKEN_EXPIRATION_SEC, function (err, reply) {
-    //            if (err) {
-    //                return next(new Error("Can not set the expire value for the token key"));
-    //            }
-    //            if (reply) {
-    //                req.user = data;
-    //                next(); // we have succeeded
-    //            } else {
-    //                return next(new Error('Expiration not set on redis'));
-    //            }
-    //        });
-    //    }
-    //    else {
-    //        return next(new Error('Token not set in redis'));
-    //    }
-    //});
+    client.set(data.token, JSON.stringify(data), function (err, reply) {
+        if (err) {
+            return next(new Error(err));
+        }
 
-    req.user = data;
-    next(); // we have succeeded
+        if (reply) {
+            client.expire(data.token, TOKEN_EXPIRATION_SEC, function (err, reply) {
+                if (err) {
+                    return next(new Error("Can not set the expire value for the token key"));
+                }
+                if (reply) {
+                    req.user = data;
+                    next(); // we have succeeded
+                } else {
+                    return next(new Error('Expiration not set on redis'));
+                }
+            });
+        }
+        else {
+            return next(new Error('Token not set in redis'));
+        }
+    });
+
+    //req.user = data;
+    //next(); // we have succeeded
 
     return data;
 
@@ -128,32 +128,32 @@ module.exports.retrieve = function (id, done) {
         });
     }
 
-    //client.get(id, function (err, reply) {
-    //    if (err) {
-    //        return done(err, {
-    //            "message": err
-    //        });
-    //    }
-    //
-    //    if (_.isNull(reply)) {
-    //        return done(new Error("token_invalid"), {
-    //            "message": "Token doesn't exists, are you sure it hasn't expired or been revoked?"
-    //        });
-    //    } else {
-    //        var data = JSON.parse(reply);
-    //        debug("User data fetched from redis store for user: %s", data.username);
-    //
-    //        if (_.isEqual(data.token, id)) {
-    //            return done(null, data);
-    //        } else {
-    //            return done(new Error("token_doesnt_exist"), {
-    //                "message": "Token doesn't exists, login into the system so it can generate new token."
-    //            });
-    //        }
-    //
-    //    }
-    //
-    //});
+    client.get(id, function (err, reply) {
+        if (err) {
+            return done(err, {
+                "message": err
+            });
+        }
+
+        if (_.isNull(reply)) {
+            return done(new Error("token_invalid"), {
+                "message": "Token doesn't exists, are you sure it hasn't expired or been revoked?"
+            });
+        } else {
+            var data = JSON.parse(reply);
+            debug("User data fetched from redis store for user: %s", data.username);
+
+            if (_.isEqual(data.token, id)) {
+                return done(null, data);
+            } else {
+                return done(new Error("token_doesnt_exist"), {
+                    "message": "Token doesn't exists, login into the system so it can generate new token."
+                });
+            }
+
+        }
+
+    });
 
     return {
         username: "Simone",
@@ -211,7 +211,7 @@ module.exports.expire = function (headers) {
     debug("Expiring token: %s", token);
 
     if (token !== null) {
-        //client.expire(token, 0);
+        client.expire(token, 0);
     }
 
     return token !== null;

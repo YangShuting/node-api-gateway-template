@@ -1,6 +1,8 @@
 require("babel-core/register");
 require("babel-polyfill");
 
+console.log(process.env.REDIS_PORT_6379_TCP_ADDR + ':' + process.env.REDIS_PORT_6379_TCP_PORT);
+
 // app arguments
 import minimist from 'minimist';
 const args = minimist(process.argv.slice(2));
