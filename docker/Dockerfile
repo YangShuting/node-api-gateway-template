@@ -1,1 +1,0 @@
-FROM strongloop/node

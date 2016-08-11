@@ -1,20 +1,20 @@
 "use strict";
 
+// logger
+import winston from 'winston';
+const logger = winston;
+
 var debug = require('debug')('app:utils:' + process.pid),
     path = require('path'),
     util = require('util'),
     redis = require("redis"),
-    client = redis.createClient({'host': '192.168.99.100'}),
+    client = redis.createClient({'host': process.env.REDIS_PORT_6379_TCP_ADDR}),
     _ = require("lodash"),
     config = require("./config.json"),
     jsonwebtoken = require("jsonwebtoken"),
     TOKEN_EXPIRATION = 60,
     TOKEN_EXPIRATION_SEC = TOKEN_EXPIRATION * 60,
     UnauthorizedAccessError = require(path.join(__dirname, 'errors', 'UnauthorizedAccessError.js'));
-
-// logger
-import winston from 'winston';
-const logger = winston;
 
 client.on('error', function (err) {
     logger.info(err);

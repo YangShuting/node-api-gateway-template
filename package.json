@@ -2,10 +2,11 @@
   "name": "node-api-gateway-template",
   "version": "0.0.1",
   "scripts": {
+    "_transduce": "./node_modules/.bin/babel src -d lib --presets=es2015 --ignore=*__tests__*",
+    "_copy-static": "cp src/*.json lib/",
     "test": "jest",
-    "build": "./node_modules/.bin/babel src -d lib --presets=es2015 --ignore=*__tests__*",
-    "start": "babel-node src/app.js  --logLevel=debug",
-    "start2": "node lib/app.js"
+    "build": "npm run _transduce && npm run _copy-static",
+    "start": "node lib/app.js"
   },
   "author": "@simonedesordi",
   "dependencies": {

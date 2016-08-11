@@ -1,23 +1,20 @@
-#FROM node:latest
+FROM node:5
 
-FROM centos:centos6
-
-# Enable EPEL for Node.js
-RUN rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-
-# Install Node.js and npm
-RUN yum install -y npm
-
-# Bundle app source
-COPY src /app/
-
-COPY package.json /package.json
+# Create app directory
+RUN mkdir -p /app
+WORKDIR /app
 
 # Install app dependencies
+COPY package.json /app/
 RUN npm install --production
 
-RUN run build
+# Bundle app source
+COPY src /app/src/
+RUN mkdir -p /app/lib
+
+# build ES5 compatible files
+RUN npm run-script build
+RUN ls -l /app/lib
 
 EXPOSE 9090
-
-CMD ["npm", "run", "start"]
+CMD ["npm", "run-script", "start"]
