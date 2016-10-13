@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "scripts": {
     "_transduce": "./node_modules/.bin/babel src -d lib --presets=es2015 --ignore=*__tests__*",
-    "_copy-static": "cp src/*.json lib/",
-    "test": "jest",
+    "_copy-static": "cp src/init/*.json lib/init/",
+    "test": "jest && jasmine-node test",
     "build": "npm run _transduce && npm run _copy-static",
-    "start": "node lib/app.js"
+    "start": "node --debug lib/app.js"
   },
   "author": "@simonedesordi",
   "dependencies": {
@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "babel-jest": "*",
+    "frisby": "^0.8.5",
     "jest-cli": "*"
   },
   "jest": {

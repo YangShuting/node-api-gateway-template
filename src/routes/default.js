@@ -1,65 +1,23 @@
-"use strict";
+// logger
+import Logger from '../log/Logger'
+const logger = Logger.get();
 
-var debug = require('debug')('app:routes:default' + process.pid),
-    _ = require("lodash"),
-    util = require('util'),
-    path = require('path'),
-    bcrypt = require('bcryptjs'),
-    utils = require("../utils.js"),
-    Router = require("express").Router,
-    UnauthorizedAccessError = require(path.join(__dirname, "..", "errors", "UnauthorizedAccessError.js")),
-    User = require(path.join(__dirname, "..", "models", "user.js")),
-    jwt = require("express-jwt");
+// Falcor
+import * as falcorRouter from 'falcor-router';
 
-var authenticate = function (req, res, next) {
+// express
+import Router from 'express';
 
-    console.log("Processing authenticate middleware");
+// authentication
+import {authenticate} from '../auth/authentication.js';
 
-    var username = req.body.username,
-        password = req.body.password;
+// authorization
+import * as utils from '../utils';
 
-    if (_.isEmpty(username) || _.isEmpty(password)) {
-        return next(new UnauthorizedAccessError("401", {
-            message: 'Invalid username or password'
-        }));
-    }
+// errors
+import UnauthorizedAccessError from '../errors/UnauthorizedAccessError';
 
-    process.nextTick(function () {
-
-        //User.findOne({
-        //    username: username
-        //}, function (err, user) {
-        //
-        //    if (err || !user) {
-        //        return next(new UnauthorizedAccessError("401", {
-        //            message: 'Invalid username or password'
-        //        }));
-        //    }
-        //
-        //    user.comparePassword(password, function (err, isMatch) {
-        //        if (isMatch && !err) {
-        //            debug("User authenticated, generating token");
-        //            utils.create(user, req, res, next);
-        //        } else {
-        //            return next(new UnauthorizedAccessError("401", {
-        //                message: 'Invalid username or password'
-        //            }));
-        //        }
-        //    });
-        //});
-
-        utils.create({
-            username: "Simone",
-            password: "password",
-            _id: "1"
-        }, req, res, next);
-
-    });
-
-
-};
-
-module.exports = function () {
+const publicRouter = () => {
 
     var router = new Router();
 
@@ -68,6 +26,8 @@ module.exports = function () {
     });
 
     router.route("/logout").get(function (req, res, next) {
+
+        logger.info("Logout called");
         if (utils.expire(req.headers)) {
             delete req.user;
             return res.status(200).json({
@@ -79,7 +39,7 @@ module.exports = function () {
     });
 
     router.route("/login").post(authenticate, function (req, res, next) {
-        console.log("Login end. Now return");
+        logger.info("Login end. Now return");
         return res.status(200).json(req.user);
     });
 
@@ -88,4 +48,38 @@ module.exports = function () {
     return router;
 };
 
-debug("Loaded");
+
+const publicDataSourceRouter = function (req, res) {
+    // create a Virtual JSON resource with single key ("greeting")
+    return new falcorRouter.Router([
+        {
+            // match a request for the key "greeting"
+            route: "greeting",
+            // respond with a PathValue with the value of "Hello World."
+            get: function () {
+                return {path: ["greeting"], value: "Hello world"};
+            }
+        }
+    ]);
+};
+
+const privateDataSourceRouter = function (req, res) {
+    // create a Virtual JSON resource with single key ("greeting")
+    return new falcorRouter.Router([
+        {
+            // match a request for the key "greeting"
+            route: "login",
+            // respond with a PathValue with the value of "Hello World."
+            get: function () {
+
+                return {path: ["login"], value: "Private Hello World"};
+            }
+        }
+    ]);
+};
+
+module.exports = {
+    publicRouter: publicRouter,
+    publicDataSourceRouter: publicDataSourceRouter,
+    privateDataSourceRouter: privateDataSourceRouter
+};

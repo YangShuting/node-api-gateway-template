@@ -1,133 +1,80 @@
+// https://matoski.com/article/jwt-express-node-mongoose
+// http://netflix.github.io/falcor/documentation/router.html
+// https://github.com/auth0/express-jwt
+
 require("babel-core/register");
 require("babel-polyfill");
 
-console.log("REDIS  -> " + process.env.REDIS_PORT_6379_TCP_ADDR + ':' + process.env.REDIS_PORT_6379_TCP_PORT);
-
-// app arguments
-import minimist from 'minimist';
-const args = minimist(process.argv.slice(2));
+// init config
+import * as init from './init/config.js';
+import config from './init/config.json';
 
 // logger
-import winston from 'winston';
-const logger = winston;
-logger.info('set log level to ' + args.logLevel);
-logger.level = args.logLevel || 'info'; // set log level
-logger.info('setted log level to ' + logger.level);
+import * as Logger from './log/Logger.js';
+const logger = Logger.get();
 
-import express from 'express';
+// express
+var express = require('express'); //import * as express from 'express';
 const app = express();
+import unless from 'express-unless';
 import * as falcorExpress from 'falcor-express';
-import Router from 'falcor-router';
-import jwt from 'express-jwt';
-import config from './config.json';
-
-var debug = require('debug')('app:' + process.pid),
-    path = require("path"),
-    onFinished = require('on-finished'),
-    NotFoundError = require(path.join(__dirname, "errors", "NotFoundError.js")),
-    utils = require(path.join(__dirname, "utils.js")),
-    unless = require('express-unless');
-
+var onFinished = require('on-finished');
+import * as bodyParser  from 'body-parser';
 app.use(require('morgan')("dev")); // log server
-var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(require('compression')());
 app.use(require('response-time')());
+import NotFoundError from './errors/NotFoundError.js';
 
-var port = function () {
-    var portGlobal = process.env.PORT;
-    logger.info("portGlobal = " + portGlobal);
+//jwt
+var jwt = require('express-jwt');
 
-    var port = portGlobal /*|| portParameter*/ || '9090';
-    logger.info("port = " + port);
+// routing
+logger.info('...istantiate routers object');
+import * as routers from './routes/default.js';
 
-    return port;
-};
+import * as utils from './utils';
 
-const publicDataSourceRouter = function (req, res) {
-    // create a Virtual JSON resource with single key ("greeting")
-    return new Router([
-        {
-            // match a request for the key "greeting"
-            route: "greeting",
-            // respond with a PathValue with the value of "Hello World."
-            get: function () {
-                return {path: ["greeting"], value: "Hello world"};
-            }
-        }
-    ]);
-};
-
-const privateDataSourceRouter = function (req, res) {
-    // create a Virtual JSON resource with single key ("greeting")
-    return new Router([
-        {
-            // match a request for the key "greeting"
-            route: "login",
-            // respond with a PathValue with the value of "Hello World."
-            get: function () {
-                return {path: ["login"], value: "Private Hello World"};
-            }
-        }
-    ]);
-};
-
+// attach logging the request result on the end of every request
 app.use(function (req, res, next) {
 
     onFinished(res, function (err) {
-        debug("[%s] finished request", req.connection.remoteAddress);
+
+        if (err)
+            logger.error('[%s] ERROR', err);
+
+        logger.info('[%s] finished request', req.connection.remoteAddress);
     });
 
     next();
 });
 
+// JWT
 var jwtCheck = jwt({
     secret: config.secret
 });
 jwtCheck.unless = unless;
 
-const publicPath = {
-    path: [
-        '/',
-        '/index.html', // just for this demo
-        '^/static/',
-        '^/api/public/'
-    ]
-};
-
 /*
- TODO
- /api/public/...
- /api/private/...
- /api/login/
- /api/logout
- /api/verify
-
- =>
+ API routes
 
  /api/public/...
- /api/public/login/
+ /api/public/login
+ /api/public/logout
+ /api/public/verify
 
  /api/private/...
- /api/private/logout
- /api/private/verify
 
  */
 
-app.use('/api/public/model.json', falcorExpress.dataSourceRoute(publicDataSourceRouter));
-app.use('/api/private/model.json', jwtCheck, falcorExpress.dataSourceRoute(privateDataSourceRouter));
+// set routers to routes
+app.use('/api/public/model.json', falcorExpress.dataSourceRoute(routers.publicDataSourceRouter));
+app.use("/api/public", routers.publicRouter());
 
-app.use("/api/private", jwtCheck.unless(publicPath));
-app.use("/api/private", utils.middleware().unless(publicPath));
-app.use("/api", require(path.join(__dirname, "routes", "default.js"))());
-
-// https://matoski.com/article/jwt-express-node-mongoose/#jwt
-// http://netflix.github.io/falcor/documentation/router.html
-// https://github.com/auth0/express-jwt
-
-// serve static files from current directory
-app.use(express.static(__dirname + '/'));
+app.use('/api/private/model.json', jwtCheck, falcorExpress.dataSourceRoute(routers.privateDataSourceRouter));
+app.use("/api/private", jwtCheck.unless(init.PUBLIC_PATH));
+app.use("/api/private", utils.middleware().unless(init.PUBLIC_PATH));
 
 // all other requests redirect to 404
 app.all("*", function (req, res, next) {
@@ -160,4 +107,5 @@ app.use(function (err, req, res, next) {
 
 });
 
-var server = app.listen(port());
+// start server
+var server = app.listen(init.getPort());

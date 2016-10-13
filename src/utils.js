@@ -3,6 +3,7 @@
 // logger
 import winston from 'winston';
 const logger = winston;
+logger.level = 'info';
 
 var debug = require('debug')('app:utils:' + process.pid),
     path = require('path'),
@@ -10,7 +11,7 @@ var debug = require('debug')('app:utils:' + process.pid),
     redis = require("redis"),
     client = redis.createClient({'host': process.env.REDIS_PORT_6379_TCP_ADDR}),
     _ = require("lodash"),
-    config = require("./config.json"),
+    config = require("./init/config.json"),
     jsonwebtoken = require("jsonwebtoken"),
     TOKEN_EXPIRATION = 60,
     TOKEN_EXPIRATION_SEC = TOKEN_EXPIRATION * 60,
@@ -31,8 +32,12 @@ client.on('connect', function () {
  * @returns {*}
  */
 module.exports.fetch = function (headers) {
+
+    logger.info('authorization %s', headers);
     if (headers && headers.authorization) {
         var authorization = headers.authorization;
+        logger.info('authorization %s', authorization);
+
         var part = authorization.split(' ');
         if (part.length === 2) {
             var token = part[1];
@@ -206,11 +211,12 @@ module.exports.verify = function (req, res, next) {
  */
 module.exports.expire = function (headers) {
 
+    logger.info('Expiring token: ' + token);
+
     var token = exports.fetch(headers);
 
-    debug("Expiring token: %s", token);
-
     if (token !== null) {
+        logger.info('Expires token on Redis');
         client.expire(token, 0);
     }
 
