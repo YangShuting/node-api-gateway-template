@@ -12,7 +12,7 @@ import Router from 'express';
 import {authenticate} from '../auth/authentication.js';
 
 // authorization
-import * as utils from '../utils';
+var authorization = require('../auth/authorization');
 
 // errors
 import UnauthorizedAccessError from '../errors/UnauthorizedAccessError';
@@ -28,7 +28,7 @@ const publicRouter = () => {
     router.route("/logout").get(function (req, res, next) {
 
         logger.info("Logout called");
-        if (utils.expire(req.headers)) {
+        if (authorization.expire(req.headers)) {
             delete req.user;
             return res.status(200).json({
                 "message": "User has been successfully logged out"

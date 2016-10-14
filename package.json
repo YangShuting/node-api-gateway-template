@@ -1,6 +1,6 @@
 {
   "name": "node-api-gateway-template",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "_transduce": "./node_modules/.bin/babel src -d lib --presets=es2015 --ignore=*__tests__*",
     "_copy-static": "cp src/init/*.json lib/init/",

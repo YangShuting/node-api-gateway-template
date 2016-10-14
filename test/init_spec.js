@@ -16,9 +16,10 @@ frisby.create('Check /login')
         {json: true})
     .expectStatus(200)
     .inspectHeaders()
-    .inspectStatus()
+    .inspectBody()
     .toss();
 /*
+ First do login, then call logout setting
  frisby.create('Check /logout')
  .get('http://www.test.com/api/public/logout')
  .expectStatus(200)

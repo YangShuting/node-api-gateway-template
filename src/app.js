@@ -34,7 +34,8 @@ var jwt = require('express-jwt');
 logger.info('...istantiate routers object');
 import * as routers from './routes/default.js';
 
-import * as utils from './utils';
+// authorization
+var authorization = require('./auth/authorization');
 
 // attach logging the request result on the end of every request
 app.use(function (req, res, next) {
@@ -74,7 +75,7 @@ app.use("/api/public", routers.publicRouter());
 
 app.use('/api/private/model.json', jwtCheck, falcorExpress.dataSourceRoute(routers.privateDataSourceRouter));
 app.use("/api/private", jwtCheck.unless(init.PUBLIC_PATH));
-app.use("/api/private", utils.middleware().unless(init.PUBLIC_PATH));
+app.use("/api/private", authorization.middleware().unless(init.PUBLIC_PATH));
 
 // all other requests redirect to 404
 app.all("*", function (req, res, next) {

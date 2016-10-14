@@ -7,7 +7,10 @@ import * as path from 'path';
 
 // model
 //var User = require(path.join(__dirname, "..", "models", "user.js"));
-import * as User from '../models/user';
+//import * as User from '../models/user';
+var User = require('../models/user');
+
+var authorization = require('../auth/authorization');
 
 var authenticate = function (req, res, next) {
 
@@ -27,37 +30,43 @@ var authenticate = function (req, res, next) {
 
     process.nextTick(function () {
 
-        User.findOne({
-            username: username
-        }, function (err, user) {
-
-            if (err || !user) {
-
-                logger.error('errore ' + err);
-                return next(new UnauthorizedAccessError("401", {
-                    message: 'Invalid username or password'
-                }));
-            }
-
-            user.comparePassword(password, function (err, isMatch) {
-                if (isMatch && !err) {
-                    debug("User authenticated, generating token");
-                    utils.create(user, req, res, next);
-                } else {
-                    return next(new UnauthorizedAccessError("401", {
-                        message: 'Invalid username or password'
-                    }));
-                }
-            });
-        });
 
         /*
-         utils.create({
-         username: "Simone",
-         password: "password",
-         _id: "1"
-         }, req, res, next);
+         logger.debug('define findOne function....');
+         User.findOne({
+         username: username
+         }, function (err, user) {
+
+         logger.debug('execute findOne function....');
+
+         if (err || !user) {
+
+         logger.error('errore ' + err);
+         return next(new UnauthorizedAccessError("401", {
+         message: 'Invalid username or password'
+         }));
+         }
+
+         user.comparePassword(password, function (err, isMatch) {
+         if (isMatch && !err) {
+         logger.debug("User authenticated, generating token");
+         authorization.create(user, req, res, next);
+         } else {
+         return next(new UnauthorizedAccessError("401", {
+         message: 'Invalid username or password'
+         }));
+         }
+         });
+         });
          */
+
+        logger.debug('fake authentication passed ...');
+        // FIXME
+        authorization.create({
+            username: "userTest",
+            password: "passwordTest",
+            _id: "1"
+        }, req, res, next);
     });
 
 };
