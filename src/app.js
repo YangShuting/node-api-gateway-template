@@ -1,5 +1,6 @@
 // https://matoski.com/article/jwt-express-node-mongoose
 // http://netflix.github.io/falcor/documentation/router.html
+// https://github.com/Netflix/falcor-router
 // https://github.com/auth0/express-jwt
 
 require("babel-core/register");
@@ -17,7 +18,7 @@ const logger = Logger.get();
 var express = require('express'); //import * as express from 'express';
 const app = express();
 import unless from 'express-unless';
-import * as falcorExpress from 'falcor-express';
+var falcorExpress = require('falcor-express'); //import * as falcorExpress from 'falcor-express';
 var onFinished = require('on-finished');
 import * as bodyParser  from 'body-parser';
 app.use(require('morgan')("dev")); // log server

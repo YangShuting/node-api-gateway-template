@@ -31,11 +31,14 @@ npm start
 
 ## Versions
 
-Next release: 0.0.3
-* fix Mongo integration (actually it doesn't work)
+Future: 0.0.4
 * introduce Kubernetes to enable a better deploy and remote/production management on cloud
 
-Version 0.0.2
+Next release: 0.0.3
+* fix Mongo integration (actually it doesn't work)
+* create a UI node with login/logout feature and dismiss the simple UI actually in [simonedesordi/test-app-ops](https://github.com/simonedesordi/test-app-ops)
+
+Actual version: 0.0.2
 * added Node 6.x
 * introduced automated integration test with [frisby](frisbyjs.com) module
 * TODO complete logout automated test

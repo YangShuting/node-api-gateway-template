@@ -3,7 +3,7 @@ import Logger from '../log/Logger'
 const logger = Logger.get();
 
 // Falcor
-import * as falcorRouter from 'falcor-router';
+var falcorRouter = require('falcor-router'); // import * as falcorRouter from 'falcor-router';
 
 // express
 import Router from 'express';
@@ -48,10 +48,9 @@ const publicRouter = () => {
     return router;
 };
 
-
-const publicDataSourceRouter = function (req, res) {
+const publicDataSourceRouter = (req, res) => {
     // create a Virtual JSON resource with single key ("greeting")
-    return new falcorRouter.Router([
+    return new falcorRouter([
         {
             // match a request for the key "greeting"
             route: "greeting",
@@ -63,9 +62,9 @@ const publicDataSourceRouter = function (req, res) {
     ]);
 };
 
-const privateDataSourceRouter = function (req, res) {
+const privateDataSourceRouter = (req, res) => {
     // create a Virtual JSON resource with single key ("greeting")
-    return new falcorRouter.Router([
+    return new falcorRouter([
         {
             // match a request for the key "greeting"
             route: "login",
