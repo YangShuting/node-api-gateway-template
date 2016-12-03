@@ -4,8 +4,11 @@ It uses express, JWT, Redis for cache, Mongo for user data storage, ES6 (Babel),
 ## Pre requirements
 * install Docker
 * install Node.js (better with nvm)
-* configure api.test.com on your etc/hosts pointing to the VM IP running Docker
+* configure api.test.com on your etc/hosts pointing to the VM IP where Docker is running
 * npm install -g jasmine-node (if you want to execute automated tests)
+
+## UI
+Module [simonedesordi/test-app-ops](https://github.com/simonedesordi/test-app-ops) also contains a simple HTML UI useful to call API URIs with simple clicks. Just open http://www.test.com/ on a browser window.
 
 ## Useful commands
 
@@ -31,17 +34,16 @@ npm start
 
 ## Versions
 
-Future: 0.0.4
+Future: 0.4.0
 * introduce Kubernetes to enable a better deploy and remote/production management on cloud
 
-Next release: 0.0.3
+Next release: 0.3.0
 * fix Mongo integration (actually it doesn't work)
+* verify token creation and authorization in a multiuser scenario
 * create a UI node with login/logout feature and dismiss the simple UI actually in [simonedesordi/test-app-ops](https://github.com/simonedesordi/test-app-ops)
 
-Actual version: 0.0.2
+Actual version: 0.2.0
 * added Node 6.x
-* introduced automated integration test with [frisby](frisbyjs.com) module
-* TODO complete logout automated test
-* TODO complete Falcor paths verify
+* introduced automated integration tests with [frisby](frisbyjs.com) module
 
 [![Build Status](https://travis-ci.org/simonedesordi/node-api-gateway-template.svg?branch=master)](https://travis-ci.org/simonedesordi/node-api-gateway-template)

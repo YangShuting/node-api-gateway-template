@@ -1,9 +1,11 @@
 {
   "name": "node-api-gateway-template",
-  "version": "0.0.2",
+  "version": "0.2.0",
   "scripts": {
     "_transduce": "./node_modules/.bin/babel src -d lib --presets=es2015 --ignore=*__tests__*",
     "_copy-static": "cp src/init/*.json lib/init/",
+    "_run-unit-tests" : "jest",
+    "_run-integration-tests" : "jasmine-node test",
     "test": "jest && jasmine-node test",
     "build": "npm run _transduce && npm run _copy-static",
     "start": "node --debug lib/app.js"

@@ -1,6 +1,7 @@
 // logger
 import * as Logger from '../log/Logger.js';
 const logger = Logger.get();
+const debug = Logger.debug;
 
 // imports
 import UnauthorizedAccessError from '../errors/UnauthorizedAccessError';
@@ -31,10 +32,12 @@ client.on('connect', function () {
  */
 module.exports.fetch = function (headers) {
 
-    logger.info('authorization %s', headers);
+    // TODO FINIRE QUI e vedere se committa la cartella del logger...
+    debug('HTTP headers : ', headers);
+
     if (headers && headers.authorization) {
         var authorization = headers.authorization;
-        logger.info('authorization %s', authorization);
+        debug('authorization %s', authorization);
 
         var part = authorization.split(' ');
         if (part.length === 2) {

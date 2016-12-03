@@ -111,3 +111,4 @@ app.use(function (err, req, res, next) {
 
 // start server
 var server = app.listen(init.getPort());
+logger.info("Application is running !!! Have fun");
